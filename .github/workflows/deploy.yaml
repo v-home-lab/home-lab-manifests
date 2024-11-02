@@ -3,7 +3,7 @@ name: Deploy to k3s cluster
 on:
   pull_request:
     branches:
-      - main
+      - master
 
 jobs:
   deploy:
