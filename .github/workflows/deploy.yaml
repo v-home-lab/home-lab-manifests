@@ -22,7 +22,9 @@ jobs:
         run: mkdir -p $HOME/.kube
 
       - name: Configure kubectl
-        run: echo "${{ secrets.KUBECONFIG_CONTENT }}" > $HOME/.kube/config
+        env:
+          KUBECONFIG: ${{ secrets.KUBECONFIG_CONTENT }}
+        run: echo "${{ secrets.KUBECONFIG_CONTENT }}" | base64 --decode > $HOME/.kube/config
 
       - name: Verify k3s login
         run: kubectl get nodes
