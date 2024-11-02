@@ -114,11 +114,12 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: git@github.com:von-homelab/home-lab-manifests
-    path: manifests/portainer/
+    repoURL: https://github.com/v-home-lab/home-lab-manifests.git
+    targetRevision: master
+    path: manifests/portainer
   destination:
     server: "https://kubernetes.default.svc"
-    namespace: default
+    namespace: portainer
   syncPolicy:
     automated:
       prune: true
