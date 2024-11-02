@@ -8,7 +8,7 @@ on:
 jobs:
   deploy:
     name: Deploy to k3s cluster
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -16,7 +16,7 @@ jobs:
       - name: Setup kubectl
         uses: azure/setup-kubectl@v3
         with:
-          version: 'latest'
+          version: "latest"
 
       - name: Create .kube directory
         run: mkdir -p $HOME/.kube
