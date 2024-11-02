@@ -1,0 +1,30 @@
+name: Deploy to k3s cluster
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy to k3s cluster
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup kubectl
+        uses: actions/setup-kubectl@v6
+        with:
+          kubectl-version: latest
+      
+      - name: Configure kubectl
+        env:
+          KUBECONFIG: ${{ secrets.KUBECONFIG_CONTENT }}
+        run: echo "${KUBECONFIG}" | base64 --decode > $HOME/.kube/config
+
+      - name: Verify k3s login
+        run: kubectl get nodes
+
+      - name: Deploy to cluster
+        run: kubectl apply -f ./manifests/
