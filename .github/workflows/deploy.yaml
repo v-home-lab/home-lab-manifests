@@ -17,7 +17,10 @@ jobs:
         uses: azure/setup-kubectl@v3
         with:
           version: 'latest'
-          
+
+      - name: Create .kube directory
+        run: mkdir -p $HOME/.kube
+
       - name: Configure kubectl
         env:
           KUBECONFIG: ${{ secrets.KUBECONFIG_CONTENT }}
