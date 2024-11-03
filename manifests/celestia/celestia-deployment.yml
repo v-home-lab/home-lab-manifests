@@ -20,40 +20,40 @@ spec:
     spec:
       nodeSelector:
         kubernetes.io/hostname: proxmox-master
-      initContainers:
-        - name: init-celestia
-          image: ghcr.io/celestiaorg/celestia-node:v0.17.2
-          command: ["/bin/sh", "-c"]
-          args:
-            - |
-              echo "Starting initialization..."
-              celestia full init --p2p.network celestia --keyring.backend test || echo "Init failed with: $?"
+      # initContainers:
+      #   - name: init-celestia
+      #     image: ghcr.io/celestiaorg/celestia-node:v0.17.2
+      #     command: ["/bin/sh", "-c"]
+      #     args:
+      #       - |
+      #         echo "Starting initialization..."
+      #         celestia full init --p2p.network celestia --keyring.backend test || echo "Init failed with: $?"
 
-              # Define config path
-              CONFIG_FILE="/home/celestia/config.toml"
+      #         # Define config path
+      #         CONFIG_FILE="/home/celestia/config.toml"
 
-              # Update routingTableRefreshPeriod to a non-zero duration
-              sed -i 's/^RoutingTableRefreshPeriod = .*/RoutingTableRefreshPeriod = "60s"/' $CONFIG_FILE
+      #         # Update routingTableRefreshPeriod to a non-zero duration
+      #         sed -i 's/^RoutingTableRefreshPeriod = .*/RoutingTableRefreshPeriod = "60s"/' $CONFIG_FILE
 
-              # Set valid values for [P2P.ConnManager]
-              sed -i '/^\[P2P.ConnManager\]/a Low = 10\nHigh = 100\nGracePeriod = "60s"' $CONFIG_FILE
+      #         # Set valid values for [P2P.ConnManager]
+      #         sed -i '/^\[P2P.ConnManager\]/a Low = 10\nHigh = 100\nGracePeriod = "60s"' $CONFIG_FILE
 
-              # Update [Share.PeerManagerParams] with non-zero timeout values
-              sed -i '/^\[Share.PeerManagerParams\]/a PoolValidationTimeout = "60s"\nPeerCooldown = "60s"\nGcInterval = "60s"\nEnableBlackListing = false' $CONFIG_FILE
+      #         # Update [Share.PeerManagerParams] with non-zero timeout values
+      #         sed -i '/^\[Share.PeerManagerParams\]/a PoolValidationTimeout = "60s"\nPeerCooldown = "60s"\nGcInterval = "60s"\nEnableBlackListing = false' $CONFIG_FILE
 
-              # Ensure [Header] section has valid values
-              sed -i '/^\[Header.Syncer\]/a TrustingPeriod = "120s"' $CONFIG_FILE
-              sed -i '/^\[Header.Server\]/a WriteDeadline = "60s"\nReadDeadline = "60s"\nRangeRequestTimeout = "30s"' $CONFIG_FILE
+      #         # Ensure [Header] section has valid values
+      #         sed -i '/^\[Header.Syncer\]/a TrustingPeriod = "120s"' $CONFIG_FILE
+      #         sed -i '/^\[Header.Server\]/a WriteDeadline = "60s"\nReadDeadline = "60s"\nRangeRequestTimeout = "30s"' $CONFIG_FILE
 
-              echo "Checking results..."
-              cat $CONFIG_FILE
-              echo "Done"
-          env:
-            - name: P2P_NETWORK
-              value: "celestia"
-          volumeMounts:
-            - name: celestia-data
-              mountPath: /home/celestia
+      #         echo "Checking results..."
+      #         cat $CONFIG_FILE
+      #         echo "Done"
+      #     env:
+      #       - name: P2P_NETWORK
+      #         value: "celestia"
+      #     volumeMounts:
+      #       - name: celestia-data
+      #         mountPath: /home/celestia
       containers:
         - name: celestia-full-node
           image: ghcr.io/celestiaorg/celestia-node:v0.17.2
