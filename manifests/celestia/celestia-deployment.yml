@@ -33,6 +33,8 @@ spec:
               echo "Checking results..."
               ls -la /home/celestia
               echo "Done"
+          securityContext:
+            runAsUser: 0
           env:
             - name: P2P_NETWORK
               value: "celestia"
