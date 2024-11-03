@@ -53,16 +53,10 @@ spec:
           volumeMounts:
             - name: celestia-data
               mountPath: /home/celestia
-            - name: config
-              mountPath: /home/celestia/config/config.toml
-              subPath: config.toml
       volumes:
         - name: celestia-data
           persistentVolumeClaim:
             claimName: celestia-data-pv-claim-1
-        - name: config
-          configMap:
-            name: celestia-config
 ---
 apiVersion: v1
 kind: Service
@@ -80,18 +74,6 @@ spec:
       name: grpc
   selector:
     app: celestia-full-node
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: celestia-config
-  namespace: celestia
-data:
-  config.toml: |
-    [Node]
-    Network = "celestia"
-    NodeType = "full"
-    KeyringBackend = "test"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -145,4 +127,4 @@ spec:
         duration: 30s
         factor: 2
         maxDuration: 5m
-# end of file #
+# end of file
