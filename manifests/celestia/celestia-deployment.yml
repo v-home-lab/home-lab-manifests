@@ -37,7 +37,7 @@ spec:
             - name: P2P_NETWORK
               value: "celestia"
             - name: RPC_URL
-              value: public-celestia-consensus.numia.xyz:26657
+              value: http://celestia-full-node.celestia.svc.cluster.local:26657
           resources:
             requests:
               memory: 8Gi
