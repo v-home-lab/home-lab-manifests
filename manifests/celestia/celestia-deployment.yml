@@ -39,9 +39,6 @@ spec:
           volumeMounts:
             - name: celestia-data
               mountPath: /home/celestia
-            - name: config
-              mountPath: /home/celestia/config.toml
-              subPath: config.toml
       containers:
         - name: celestia-full-node
           image: ghcr.io/celestiaorg/celestia-node:v0.17.2
@@ -75,16 +72,10 @@ spec:
           volumeMounts:
             - name: celestia-data
               mountPath: /home/celestia
-            - name: config
-              mountPath: /home/celestia/config.toml
-              subPath: config.toml
       volumes:
         - name: celestia-data
           persistentVolumeClaim:
             claimName: celestia-data-pv-claim-1
-        - name: config
-          configMap:
-            name: celestia-config
 ---
 apiVersion: v1
 kind: Service
@@ -102,18 +93,6 @@ spec:
       name: grpc
   selector:
     app: celestia-full-node
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: celestia-config
-  namespace: celestia
-data:
-  config.toml: |
-    [Node]
-    Network = "celestia"
-    NodeType = "full"
-    KeyringBackend = "test"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
