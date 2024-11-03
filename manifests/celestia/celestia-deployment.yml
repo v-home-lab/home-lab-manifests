@@ -109,6 +109,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: celestia-data-pv-claim
   namespace: celestia
+  storageClassName: celestia
 spec:
   accessModes:
     - ReadWriteOnce
