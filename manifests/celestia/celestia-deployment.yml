@@ -54,7 +54,7 @@ spec:
             - name: celestia-data
               mountPath: /home/celestia
             - name: config
-              mountPath: /home/celestia/config/config.toml
+              mountPath: /home/celestia/config.toml
               subPath: config.toml
       volumes:
         - name: celestia-data
@@ -130,7 +130,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/v-home-lab/home-lab-manifests.git
-    targetRevision: master
+    targetRevision: celestia
     path: manifests/celestia
   destination:
     server: "https://kubernetes.default.svc"
