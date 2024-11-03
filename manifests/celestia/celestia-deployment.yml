@@ -30,8 +30,19 @@ spec:
               ls -la /home/celestia
               echo "Running celestia init..."
               celestia full init --p2p.network celestia --keyring.backend test || echo "Init failed with: $?"
+
+              # Customize the configuration file
+              CONFIG_FILE="/home/celestia/config.toml"
+
+              # Set P2P RoutingTableRefreshPeriod and ConnManager values
+              sed -i 's/^RoutingTableRefreshPeriod = .*/RoutingTableRefreshPeriod = "60s"/' $CONFIG_FILE
+              sed -i '/^\[P2P.ConnManager\]/a Low = 10\nHigh = 100\nGracePeriod = "60s"' $CONFIG_FILE
+
+              # Set Share PeerManagerParams values
+              sed -i '/^\[Share.PeerManagerParams\]/a PoolValidationTimeout = "60s"\nPeerCooldown = "60s"\nGcInterval = "60s"\nEnableBlackListing = false' $CONFIG_FILE
+
               echo "Checking results..."
-              ls -la /home/celestia
+              cat $CONFIG_FILE
               echo "Done"
           env:
             - name: P2P_NETWORK
@@ -39,6 +50,7 @@ spec:
           volumeMounts:
             - name: celestia-data
               mountPath: /home/celestia
+
       containers:
         - name: celestia-full-node
           image: ghcr.io/celestiaorg/celestia-node:v0.17.2
