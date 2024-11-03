@@ -29,7 +29,7 @@ spec:
               echo "Starting initialization..."
               ls -la /home/celestia
               echo "Running celestia init..."
-              celestia full init --p2p.network celestia --keyring.backend test || echo "Init failed with: $?"
+              celestia full init --p2p.network celestia || echo "Init failed with: $?"
               echo "Checking results..."
               ls -la /home/celestia
               echo "Done"
