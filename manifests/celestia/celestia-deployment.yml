@@ -31,8 +31,6 @@ spec:
             - "$(RPC_URL)"
             - "--p2p.network"
             - "$(P2P_NETWORK)"
-            - "--rpc.port"
-            - "26657"
           env:
             - name: NODE_TYPE
               value: "full"
