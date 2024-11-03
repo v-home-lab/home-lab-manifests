@@ -23,8 +23,16 @@ spec:
       initContainers:
         - name: init-celestia
           image: ghcr.io/celestiaorg/celestia-node:v0.17.2
-          command: ["celestia"]
-          args: ["full", "init"]
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo "Starting initialization..."
+              ls -la /home/celestia
+              echo "Running celestia init..."
+              celestia full init --p2p.network celestia || echo "Init failed with: $?"
+              echo "Checking results..."
+              ls -la /home/celestia
+              echo "Done"
           env:
             - name: P2P_NETWORK
               value: "celestia"
