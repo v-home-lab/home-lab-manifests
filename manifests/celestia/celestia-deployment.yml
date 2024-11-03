@@ -1,0 +1,145 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: celestia
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: celestia-full-node
+  namespace: celestia
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: celestia-full-node
+  template:
+    metadata:
+      labels:
+        app: celestia-full-node
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: proxmox-master
+    containers:
+      - name: celestia-full-node
+        image: ghcr.io/celestiaorg/celestia-node:v0.17.2
+        command: ["celestia"]
+        args:
+          - "full"
+          - "start"
+          - "--core.ip"
+          - "$(RPC_URL)"
+          - "--p2p.network"
+          - "$(P2P_NETWORK)"
+        env:
+          - name: NODE_TYPE
+            value: "full"
+          - name: P2P_NETWORK
+            value: "celestia"
+          - name: RPC_URL
+            value: public-celestia-consensus.numia.xyz
+        resources:
+          requests:
+            memory: 8Gi
+            cpu: 4
+          limits:
+            memory: 16Gi
+            cpu: 8
+        ports:
+          - containerPort: 26657
+            name: rpc
+          - containerPort: 9090
+            name: grpc
+        volumeMounts:
+          - name: celestia-data
+            mountPath: /home/celestia/.celestia-full-celestia
+          - name: config
+            mountPath: /home/celestia/.celestia-full-celestia/config
+    volumes:
+      - name: celestia-data
+        persistentVolumeClaim:
+          claimName: celestia-data-pv-claim
+      - name: config
+        configMap:
+          name: celestia-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: celestia-full-node
+  namespace: celestia
+spec:
+  type: NodePort
+  ports:
+    - port: 26657
+      targetPort: 26657
+      name: rpc
+    - port: 9090
+      targetPort: 9090
+      name: grpc
+  selector:
+    app: celestia-full-node
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: celestia-config
+  namespace: celestia
+data:
+  config.toml: |
+    [Node]
+    Network = "celestia"
+    NodeType = "full"
+    KeyringBackend = "test"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: celestia-data-pv-claim
+  namespace: celestia
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Gi
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: celestia-data-pv
+spec:
+  capacity:
+    storage: 500Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: celestia
+  nfs:
+    server: 192.168.1.80
+    path: /mnt/ssd/celestia
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: portainer
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/v-home-lab/home-lab-manifests.git
+    targetRevision: master
+    path: manifests/celestia
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: celestia
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    retry:
+      limit: 5
+      backoff:
+        duration: 30s
+        factor: 2
+        maxDuration: 5m
