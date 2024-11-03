@@ -20,6 +20,17 @@ spec:
     spec:
       nodeSelector:
         kubernetes.io/hostname: proxmox-master
+      initContainers:
+        - name: init-celestia
+          image: ghcr.io/celestiaorg/celestia-node:v0.17.2
+          command: ["celestia"]
+          args: ["full", "init"]
+          env:
+            - name: P2P_NETWORK
+              value: "celestia"
+          volumeMounts:
+            - name: celestia-data
+              mountPath: /home/celestia
       containers:
         - name: celestia-full-node
           image: ghcr.io/celestiaorg/celestia-node:v0.17.2
@@ -52,9 +63,10 @@ spec:
               name: grpc
           volumeMounts:
             - name: celestia-data
-              mountPath: /home/celestia/.celestia-full-celestia
+              mountPath: /home/celestia
             - name: config
-              mountPath: /home/celestia/.celestia-full-celestia/config
+              mountPath: /home/celestia/config/config.toml
+              subPath: config.toml
       volumes:
         - name: celestia-data
           persistentVolumeClaim:
@@ -98,6 +110,7 @@ metadata:
   name: celestia-data-pv-claim
   namespace: celestia
 spec:
+  storageClassName: celestia
   accessModes:
     - ReadWriteOnce
   resources:
