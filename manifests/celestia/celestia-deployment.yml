@@ -20,6 +20,20 @@ spec:
     spec:
       nodeSelector:
         kubernetes.io/hostname: proxmox-master
+      initContainers:
+        - name: init-celestia
+          image: ghcr.io/celestiaorg/celestia-node:v0.17.2
+          command: ["celestia"]
+          args: ["full", "init"]
+          env:
+            - name: P2P_NETWORK
+              value: "celestia"
+          volumeMounts:
+            - name: celestia-data
+              mountPath: /home/celestia
+            - name: config
+              mountPath: /home/celestia/config.toml
+              subPath: config.toml
       containers:
         - name: celestia-full-node
           image: ghcr.io/celestiaorg/celestia-node:v0.17.2
