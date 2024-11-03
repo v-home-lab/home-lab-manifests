@@ -110,7 +110,6 @@ metadata:
   name: celestia-data-pv-claim
   namespace: celestia
 spec:
-  storageClassName: celestia
   accessModes:
     - ReadWriteOnce
   resources:
