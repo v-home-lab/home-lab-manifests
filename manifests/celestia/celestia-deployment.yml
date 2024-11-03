@@ -70,7 +70,7 @@ spec:
       volumes:
         - name: celestia-data
           persistentVolumeClaim:
-            claimName: celestia-data-pv-claim
+            claimName: celestia-data-pv-claim-1
         - name: config
           configMap:
             name: celestia-config
@@ -107,7 +107,7 @@ data:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: celestia-data-pv-claim
+  name: celestia-data-pv-claim-1
   namespace: celestia
 spec:
   storageClassName: celestia
