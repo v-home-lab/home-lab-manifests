@@ -50,6 +50,10 @@ spec:
             - "$(RPC_URL)"
             - "--p2p.network"
             - "$(P2P_NETWORK)"
+            - "--share.useexchange" # Enable share exchange
+            - "--share.peerparams.poolvalidationtimeout=5s" # Set validation timeout
+            - "--share.peerparams.peercooldown=1m" # Set cooldown period
+            - "--share.peerparams.gcinterval=1m" # Set garbage collection interval
           env:
             - name: NODE_TYPE
               value: "full"
