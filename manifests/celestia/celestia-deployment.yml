@@ -28,7 +28,7 @@ spec:
             - "full"
             - "start"
             - "--core.ip"
-            - "$(RPC_URL)"
+            - "$(PUBLIC_RPC_URL)"
             - "--p2p.network"
             - "$(P2P_NETWORK)"
           env:
@@ -37,6 +37,8 @@ spec:
             - name: P2P_NETWORK
               value: "celestia"
             - name: RPC_URL
+              value: "127.0.0.1:26658"
+            - name: PUBLIC_RPC_URL
               value: public-celestia-consensus.numia.xyz:26657
           resources:
             requests:
@@ -48,6 +50,8 @@ spec:
           ports:
             - containerPort: 26657
               name: rpc
+            - containerPort: 26658
+              name: local-rpc
             - containerPort: 9090
               name: grpc
           volumeMounts:
@@ -69,6 +73,9 @@ spec:
     - port: 26657
       targetPort: 26657
       name: rpc
+    - port: 26658
+      targetPort: 26658
+      name: local-rpc
     - port: 9090
       targetPort: 9090
       name: grpc
