@@ -28,7 +28,7 @@ spec:
             - "full"
             - "start"
             - "--core.ip"
-            - "$(RPC_URL)"
+            - "$(PUBLIC_RPC_URL)"
             - "--p2p.network"
             - "$(P2P_NETWORK)"
           env:
@@ -52,8 +52,8 @@ spec:
               name: rpc
             - containerPort: 26658
               name: local-rpc
-            # - containerPort: 9090
-            #   name: grpc
+            - containerPort: 9090
+              name: grpc
           volumeMounts:
             - name: celestia-data
               mountPath: /home/celestia
@@ -76,9 +76,9 @@ spec:
     - port: 26658
       targetPort: 26658
       name: local-rpc
-    # - port: 9090
-    #   targetPort: 9090
-    #   name: grpc
+    - port: 9090
+      targetPort: 9090
+      name: grpc
   selector:
     app: celestia-full-node
 ---
@@ -119,7 +119,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/v-home-lab/home-lab-manifests.git
-    targetRevision: change-rpc
+    targetRevision: master
     path: manifests/celestia
   destination:
     server: "https://kubernetes.default.svc"
