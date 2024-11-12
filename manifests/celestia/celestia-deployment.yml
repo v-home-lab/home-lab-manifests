@@ -25,7 +25,7 @@ spec:
           image: ghcr.io/celestiaorg/celestia-node:v0.17.2
           command: ["celestia"]
           args:
-            - "full"
+            - "light"
             - "start"
             - "--core.ip"
             - "$(PUBLIC_RPC_URL)"
