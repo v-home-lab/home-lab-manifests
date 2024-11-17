@@ -60,7 +60,7 @@ spec:
       volumes:
         - name: celestia-data
           persistentVolumeClaim:
-            claimName: celestia-data-pv-claim-1
+            claimName: celestia-data-pv-claim-2
 ---
 apiVersion: v1
 kind: Service
@@ -85,7 +85,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: celestia-data-pv-claim-1
+  name: celestia-data-pv-claim-2
   namespace: celestia
 spec:
   storageClassName: celestia
@@ -98,7 +98,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: celestia-data-pv
+  name: celestia-data-pv-1
 spec:
   capacity:
     storage: 500Gi
