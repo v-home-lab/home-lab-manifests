@@ -56,13 +56,13 @@ spec:
           volumeMounts:
             - mountPath: /dev/shm
               name: shared-memory
-          volumes:
-            - name: postgresql-data
-              persistentVolumeClaim:
-                claimName: lantern-postgresql-pvc
-            - name: shared-memory
-              emptyDir:
-                medium: Memory
+      volumes:
+        - name: postgresql-data
+          persistentVolumeClaim:
+            claimName: lantern-postgresql-pvc
+        - name: shared-memory
+          emptyDir:
+            medium: Memory
 ---
 
 apiVersion: v1
