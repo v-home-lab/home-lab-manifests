@@ -64,7 +64,7 @@ spec:
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: ollama
+  name: ollama-llama
   namespace: argocd
 spec:
   project: default
@@ -74,7 +74,7 @@ spec:
     path: manifests/ollama
   destination:
     server: "https://kubernetes.default.svc"
-    namespace: ollama
+    namespace: ollama-llama
   syncPolicy:
     automated:
       prune: true
