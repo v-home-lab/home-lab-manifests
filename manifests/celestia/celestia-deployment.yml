@@ -33,7 +33,7 @@
 #             - "$(P2P_NETWORK)"
 #           env:
 #             - name: NODE_TYPE
-#               value: "full"
+#               value: "light"
 #             - name: P2P_NETWORK
 #               value: "celestia"
 #             - name: RPC_URL
@@ -108,7 +108,7 @@
 #   storageClassName: celestia
 #   nfs:
 #     server: 192.168.1.80
-#     path: /mnt/ssd/celestia
+#     path: /mnt/shared/celestia
 # ---
 # apiVersion: argoproj.io/v1alpha1
 # kind: Application
