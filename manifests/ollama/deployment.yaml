@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ollama-llama
+  labels:
+    app: ollama-llama
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ollama-llama
+  template:
+    metadata:
+      labels:
+        app: ollama-llama
+    spec:
+      containers:
+        - name: ollama-llama
+          image: alpine/llama3.2:latest
+          ports:
+            - containerPort: 11434
+          resources:
+            limits:
+              memory: "8Gi"
+              cpu: "4"
+            requests:
+              memory: "4Gi"
+              cpu: "2"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 11434
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 11434
+            initialDelaySeconds: 10
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ollama-llama-service
+  labels:
+    app: ollama-llama
+spec:
+  selector:
+    app: ollama-llama
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 11434
+  type: LoadBalancer

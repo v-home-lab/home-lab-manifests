@@ -1,0 +1,107 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: lantern-postgresql
+  labels:
+    app: lantern
+spec:
+  serviceName: lantern-postgresql
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lantern
+  template:
+    metadata:
+      labels:
+        app: lantern
+    spec:
+      containers:
+        - name: postgresql
+          image: lanterndata/lantern-self-hosted:lantern-0.2.7-extras-0.1.5-minor-2
+          ports:
+            - containerPort: 5432
+              name: postgres
+            - containerPort: 6432
+              name: pgbouncer
+          env:
+            - name: POSTGRESQL_DATABASE
+              value: "postgres"
+            - name: POSTGRESQL_POSTGRES_PASSWORD
+              value: "<superuser_password>"
+            - name: POSTGRESQL_USERNAME
+              value: "<user_username>"
+            - name: POSTGRESQL_PASSWORD
+              value: "<user_password>"
+            - name: WALG_S3_PREFIX
+              value: "s3://<backup_bucket>/<backup_location>"
+            - name: POSTGRESQL_AUTO_BASE_BACKUP
+              value: "yes"
+            - name: LANTERN_AUTO_INIT
+              value: "yes"
+            - name: POSTGRESQL_LOG_DURATION
+              value: "true"
+            - name: POSTGRESQL_LOG_MIN_DURATION_STATEMENT
+              value: "250ms"
+          resources:
+            limits:
+              memory: "1Gi"
+          volumeMounts:
+            - mountPath: /bitnami/postgresql
+              name: postgresql-data
+          volumeMounts:
+            - mountPath: /dev/shm
+              name: shared-memory
+          volumes:
+            - name: postgresql-data
+              persistentVolumeClaim:
+                claimName: lantern-postgresql-pvc
+            - name: shared-memory
+              emptyDir:
+                medium: Memory
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: lantern-postgresql-pv
+spec:
+  capacity:
+    storage: 50Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: /ssd/lantern-postgresql
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: lantern-postgresql-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  volumeName: lantern-postgresql-pv
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: lantern-postgresql
+  labels:
+    app: lantern
+spec:
+  ports:
+    - port: 5432
+      targetPort: postgres
+      name: postgres
+    - port: 6432
+      targetPort: pgbouncer
+      name: pgbouncer
+  selector:
+    app: lantern
+  type: ClusterIP
