@@ -32,20 +32,20 @@ spec:
             - name: POSTGRESQL_DATABASE
               value: "postgres"
             - name: POSTGRESQL_POSTGRES_PASSWORD
-                valueFrom:
-                  secretKeyRef:
-                    name: lantern-credentials
-                    key: postgres-password
+              valueFrom:
+                secretKeyRef:
+                  name: lantern-credentials
+                  key: postgres-password
             - name: POSTGRESQL_USERNAME
-                valueFrom:
-                  secretKeyRef:
-                    name: lantern-credentials
-                    key: user-name
+              valueFrom:
+                secretKeyRef:
+                  name: lantern-credentials
+                  key: user-name
             - name: POSTGRESQL_PASSWORD
-                valueFrom:
-                  secretKeyRef:
-                    name: lantern-credentials
-                    key: user-password
+              valueFrom:
+                secretKeyRef:
+                  name: lantern-credentials
+                  key: user-password
             - name: POSTGRESQL_AUTO_BASE_BACKUP
               value: "yes"
             - name: LANTERN_AUTO_INIT
