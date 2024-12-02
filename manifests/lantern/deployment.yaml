@@ -32,13 +32,20 @@ spec:
             - name: POSTGRESQL_DATABASE
               value: "postgres"
             - name: POSTGRESQL_POSTGRES_PASSWORD
-              value: "<superuser_password>"
+              valueFrom:
+                secretKeyRef:
+                  name: lantern-credentials
+                  key: postgres-password
             - name: POSTGRESQL_USERNAME
-              value: "<user_username>"
+              valueFrom:
+                secretKeyRef:
+                  name: lantern-credentials
+                  key: user-name
             - name: POSTGRESQL_PASSWORD
-              value: "<user_password>"
-            - name: WALG_S3_PREFIX
-              value: "s3://<backup_bucket>/<backup_location>"
+              valueFrom:
+                secretKeyRef:
+                  name: lantern-credentials
+                  key: user-password
             - name: POSTGRESQL_AUTO_BASE_BACKUP
               value: "yes"
             - name: LANTERN_AUTO_INIT
