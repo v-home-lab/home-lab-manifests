@@ -91,6 +91,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: lantern-db-pvc
+  namespace: lantern
 spec:
   accessModes:
     - ReadWriteOnce
