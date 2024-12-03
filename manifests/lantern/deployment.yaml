@@ -1,147 +1,147 @@
-# apiVersion: v1
-# kind: Namespace
-# metadata:
-#   name: lantern
-# ---
-# apiVersion: apps/v1
-# kind: StatefulSet
-# metadata:
-#   name: lantern-postgresql
-#   labels:
-#     app: lantern
-# spec:
-#   serviceName: lantern-postgresql
-#   replicas: 1
-#   selector:
-#     matchLabels:
-#       app: lantern
-#   template:
-#     metadata:
-#       labels:
-#         app: lantern
-#     spec:
-#       containers:
-#         - name: postgresql
-#           image: lanterndata/lantern-self-hosted:lantern-0.2.7-extras-0.1.5-minor-2
-#           ports:
-#             - containerPort: 5432
-#               name: postgres
-#             - containerPort: 6432
-#               name: pgbouncer
-#           env:
-#             - name: POSTGRESQL_DATABASE
-#               value: "postgres"
-#             - name: POSTGRESQL_POSTGRES_PASSWORD
-#               valueFrom:
-#                 secretKeyRef:
-#                   name: lantern-credentials
-#                   key: postgres-password
-#             - name: POSTGRESQL_USERNAME
-#               valueFrom:
-#                 secretKeyRef:
-#                   name: lantern-credentials
-#                   key: user-name
-#             - name: POSTGRESQL_PASSWORD
-#               valueFrom:
-#                 secretKeyRef:
-#                   name: lantern-credentials
-#                   key: user-password
-#             - name: POSTGRESQL_AUTO_BASE_BACKUP
-#               value: "yes"
-#             - name: LANTERN_AUTO_INIT
-#               value: "yes"
-#             - name: POSTGRESQL_LOG_DURATION
-#               value: "true"
-#             - name: POSTGRESQL_LOG_MIN_DURATION_STATEMENT
-#               value: "250ms"
-#           resources:
-#             limits:
-#               memory: "1Gi"
-#           volumeMounts:
-#             - mountPath: /bitnami/postgresql
-#               name: postgresql-data
-#           volumeMounts:
-#             - mountPath: /dev/shm
-#               name: shared-memory
-#       volumes:
-#         - name: postgresql-data
-#           persistentVolumeClaim:
-#             claimName: lantern-postgresql-pvc
-#         - name: shared-memory
-#           emptyDir:
-#             medium: Memory
-# ---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: lantern
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: lantern-postgresql
+  labels:
+    app: lantern
+spec:
+  serviceName: lantern-postgresql
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lantern
+  template:
+    metadata:
+      labels:
+        app: lantern
+    spec:
+      containers:
+        - name: postgresql
+          image: lanterndata/lantern-self-hosted:lantern-0.2.7-extras-0.1.5-minor-2
+          ports:
+            - containerPort: 5432
+              name: postgres
+            - containerPort: 6432
+              name: pgbouncer
+          env:
+            - name: POSTGRESQL_DATABASE
+              value: "postgres"
+            - name: POSTGRESQL_POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: lantern-credentials
+                  key: postgres-password
+            - name: POSTGRESQL_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: lantern-credentials
+                  key: user-name
+            - name: POSTGRESQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: lantern-credentials
+                  key: user-password
+            - name: POSTGRESQL_AUTO_BASE_BACKUP
+              value: "yes"
+            - name: LANTERN_AUTO_INIT
+              value: "yes"
+            - name: POSTGRESQL_LOG_DURATION
+              value: "true"
+            - name: POSTGRESQL_LOG_MIN_DURATION_STATEMENT
+              value: "250ms"
+          resources:
+            limits:
+              memory: "1Gi"
+          volumeMounts:
+            - mountPath: /bitnami/postgresql
+              name: postgresql-data
+          volumeMounts:
+            - mountPath: /dev/shm
+              name: shared-memory
+      volumes:
+        - name: postgresql-data
+          persistentVolumeClaim:
+            claimName: lantern-db-pvc
+        - name: shared-memory
+          emptyDir:
+            medium: Memory
+---
 
-# apiVersion: v1
-# kind: PersistentVolume
-# metadata:
-#   name: lantern-postgresql-pv
-# spec:
-#   capacity:
-#     storage: 10Gi
-#   accessModes:
-#     - ReadWriteOnce
-#   persistentVolumeReclaimPolicy: Retain
-#   storageClassName: lantern
-#   hostPath:
-#     path: /ssd/lantern-postgresql
-# ---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: lantern-db-pv
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: lantern
+  hostPath:
+    path: /ssd/lantern-postgresql
+---
 
-# apiVersion: v1
-# kind: PersistentVolumeClaim
-# metadata:
-#   name: lantern-postgresql-pvc
-# spec:
-#   accessModes:
-#     - ReadWriteOnce
-#   resources:
-#     requests:
-#       storage: 10Gi
-#   storageClassName: lantern
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: lantern-db-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: lantern
 
-# ---
+---
 
-# apiVersion: v1
-# kind: Service
-# metadata:
-#   name: lantern-postgresql
-#   labels:
-#     app: lantern
-# spec:
-#   ports:
-#     - port: 5432
-#       targetPort: postgres
-#       name: postgres
-#     - port: 6432
-#       targetPort: pgbouncer
-#       name: pgbouncer
-#   selector:
-#     app: lantern
-#   type: ClusterIP
+apiVersion: v1
+kind: Service
+metadata:
+  name: lantern-postgresql
+  labels:
+    app: lantern
+spec:
+  ports:
+    - port: 5432
+      targetPort: postgres
+      name: postgres
+    - port: 6432
+      targetPort: pgbouncer
+      name: pgbouncer
+  selector:
+    app: lantern
+  type: ClusterIP
 
-# ---
+---
 
-# apiVersion: argoproj.io/v1alpha1
-# kind: Application
-# metadata:
-#   name: lantern
-#   namespace: argocd
-# spec:
-#   project: default
-#   source:
-#     repoURL: https://github.com/v-home-lab/home-lab-manifests.git
-#     targetRevision: master
-#     path: manifests/lantern
-#   destination:
-#     server: "https://kubernetes.default.svc"
-#     namespace: lantern
-#   syncPolicy:
-#     automated:
-#       prune: true
-#       selfHeal: true
-#     retry:
-#       limit: 5
-#       backoff:
-#         duration: 30s
-#         factor: 2
-#         maxDuration: 5m
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: lantern
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/v-home-lab/home-lab-manifests.git
+    targetRevision: master
+    path: manifests/lantern
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: lantern
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    retry:
+      limit: 5
+      backoff:
+        duration: 30s
+        factor: 2
+        maxDuration: 5m
